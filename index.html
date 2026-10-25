@@ -1,0 +1,581 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DECOY-X - AI Cyber Deception & Digital Crime Scene Reconstruction</title>
+<style>
+:root{--bg:#050b17;--side:#08142a;--panel:#0b1a31;--line:#1a3459;--text:#e6f0ff;--mute:#7f98ba;--cy:#35c2ff;--bl:#3b82f6;--red:#ff4d5e;--amb:#ffb020;--gr:#2ee6a6}
+*{box-sizing:border-box}
+html,body{margin:0;background:radial-gradient(1200px 600px at 70% -10%,#0d2447 0,var(--bg) 60%);color:var(--text);font-family:"Segoe UI",system-ui,sans-serif;line-height:1.45}
+.app{display:grid;grid-template-columns:210px 1fr;min-height:100vh}
+aside{background:var(--side);border-right:1px solid var(--line);padding:16px 12px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;gap:6px}
+.brand{font-size:20px;font-weight:800;letter-spacing:.5px;padding:4px 8px 14px;color:#fff}
+.brand i{color:var(--cy);font-style:normal}
+aside button{display:flex;gap:10px;align-items:center;text-align:left;background:none;border:1px solid transparent;color:var(--mute);padding:10px 12px;border-radius:8px;font:inherit;cursor:pointer}
+aside button:hover{color:var(--text)}
+aside button.on{background:linear-gradient(90deg,#123a73,#0c2347);border-color:var(--bl);color:#fff}
+aside .tag{margin-top:auto;font-size:12px;color:var(--mute);padding:8px}
+.main{padding:14px 18px;min-width:0}
+.top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:14px}
+.top h1{margin:0;font-size:22px;font-weight:800}.top h1 small{display:block;font-size:12px;color:var(--cy);font-weight:400;font-style:italic}
+.right{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pill{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:6px 12px;font-size:12px;color:var(--mute)}
+.pill b{color:var(--gr)}
+button.btn,select,input{background:#0d2040;color:var(--text);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font:inherit}
+button.btn{cursor:pointer}button.btn:hover{border-color:var(--cy)}
+button.pri{background:linear-gradient(180deg,#2f8cff,#1c5fd6);border-color:#4aa0ff;font-weight:700;color:#fff}
+button:disabled{opacity:.4;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--cy);outline-offset:2px}
+.page{display:none}.page.on{display:block}
+.grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px}
+.c3{grid-column:span 3}.c4{grid-column:span 4}.c5{grid-column:span 5}.c6{grid-column:span 6}.c7{grid-column:span 7}.c8{grid-column:span 8}.c12{grid-column:span 12}
+.kp{grid-column:span 12;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+@media(max-width:1150px){.c3,.c4,.c5,.c6,.c7,.c8{grid-column:span 12}.kp{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:800px){.app{grid-template-columns:1fr}aside{position:static;height:auto;flex-direction:row;flex-wrap:wrap}aside .tag{display:none}}
+.card{min-width:0;overflow-x:auto;background:linear-gradient(180deg,rgba(14,30,56,.92),rgba(8,19,38,.92));border:1px solid var(--line);border-radius:12px;padding:14px;box-shadow:0 0 24px rgba(40,120,255,.06)}
+.card h2{margin:0 0 10px;font-size:14px;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.kpi{display:flex;gap:12px;align-items:center;background:linear-gradient(180deg,rgba(14,30,56,.92),rgba(8,19,38,.92));border:1px solid var(--line);border-radius:12px;padding:14px}
+.kpi .ico{width:44px;height:44px;border-radius:10px;display:grid;place-items:center;font-size:20px;background:#0f2a52;color:var(--cy)}
+.kpi.r .ico{background:#3a1420;color:var(--red)}.kpi.g .ico{background:#0f3a33;color:var(--gr)}.kpi.a .ico{background:#3a2c0f;color:var(--amb)}
+.kl{font-size:12px;color:var(--mute)}.kv{font-size:26px;font-weight:800;line-height:1.1}.ks{font-size:12px;color:var(--mute)}
+.kpi.r .kv{color:var(--red)}
+.maptools{display:flex;gap:6px;align-items:center}
+.seg button{background:#0d2040;border:1px solid var(--line);color:var(--mute);padding:4px 12px;cursor:pointer;font:inherit;font-size:12px}
+.seg button:first-child{border-radius:6px 0 0 6px}.seg button:last-child{border-radius:0 6px 6px 0}.seg button.on{background:var(--bl);color:#fff;border-color:var(--bl)}
+.mapbox{display:grid;grid-template-columns:1fr 150px;gap:10px}
+@media(max-width:700px){.mapbox{grid-template-columns:1fr}}
+.stage{perspective:1000px;overflow:hidden;border-radius:10px;background:radial-gradient(circle at 50% 40%,#0c2243,#06101f)}
+.stage svg{width:100%;height:auto;display:block;transition:transform .6s;transform-origin:50% 60%}
+.stage.d3 svg{transform:rotateX(28deg) scale(.96)}
+.layers{font-size:12px;color:var(--mute);display:flex;flex-direction:column;gap:6px}
+.layers label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.layers b{color:var(--text);font-size:12px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+.edge{stroke:#27446e;stroke-width:2}
+.edge.trail{stroke:var(--red);stroke-width:3.5;stroke-dasharray:7 5;animation:dash 1s linear infinite;filter:drop-shadow(0 0 4px var(--red))}
+.node circle{fill:#0e2547;stroke:var(--bl);stroke-width:2.5}
+.node text{fill:var(--text);font-size:12px;text-anchor:middle;font-weight:700}
+.node .lbl{fill:var(--mute);font-weight:400}
+.node.has circle{stroke:var(--amb)}
+.node.hit circle{stroke:var(--red);stroke-width:4;filter:drop-shadow(0 0 8px var(--red))}
+.dec rect{fill:var(--amb)}.dec text{fill:#1b1304;font-size:10px}
+#atk{transition:transform .9s ease-in-out}.atk{fill:var(--red);stroke:#fff;stroke-width:2;filter:drop-shadow(0 0 8px var(--red))}
+.hide-dec .dec{display:none}.hide-path .trail{stroke:#27446e;stroke-dasharray:none;filter:none}.hide-path #atk{display:none}
+.hide-edges .edge{opacity:0}.hide-real .node:not(.has) {opacity:.15}
+.ring{width:150px;height:150px}
+.ring .rt{fill:none;stroke:#13284a;stroke-width:12}.ring .rv{fill:none;stroke:var(--gr);stroke-width:12;stroke-linecap:round;transition:stroke-dasharray .7s}
+.ring.hi .rv{stroke:var(--amb)}.ring.cr .rv{stroke:var(--red);filter:drop-shadow(0 0 6px var(--red))}
+.ring text{fill:var(--text);text-anchor:middle}
+.an{display:grid;grid-template-columns:150px 1fr;gap:12px;align-items:center}
+@media(max-width:600px){.an{grid-template-columns:1fr}}
+.badge{display:inline-block;border:1px solid var(--red);color:#ffb3bb;background:#3a1420;border-radius:6px;padding:2px 10px;font-size:12px;font-weight:700}
+.badge.g{border-color:var(--gr);color:var(--gr);background:#0f3a33}.badge.a{border-color:var(--amb);color:var(--amb);background:#3a2c0f}
+.ind{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}.ind span{border:1px solid var(--red);color:#ffb3bb;border-radius:6px;padding:3px 10px;font-size:12px;background:#2a1019}
+.mut{color:var(--mute);font-size:13px}.empty{color:var(--mute);font-size:14px;margin:0}
+ul.l{margin:6px 0 0;padding-left:18px;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--mute);font-weight:600}
+.ok{color:var(--gr);font-weight:700}.bad{color:var(--red);font-weight:700}
+code{font-family:Consolas,monospace;font-size:12px;color:#9cc4ff}
+.chain{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px;font-size:12px}
+.chain b{padding:4px 10px;border:1px solid var(--gr);border-radius:6px;color:var(--gr);background:#0b2a28}.chain b.x{border-color:var(--red);color:var(--red);background:#2a1019}
+ol.tl{list-style:none;margin:0;padding:0 0 0 16px;border-left:2px solid var(--line)}
+ol.tl li{position:relative;padding:3px 0 10px 14px;font-size:13px}
+ol.tl li::before{content:"";position:absolute;left:-23px;top:8px;width:10px;height:10px;border-radius:50%;background:var(--mute)}
+ol.tl li.al::before{background:var(--red);box-shadow:0 0 8px var(--red)}ol.tl li.cur{font-weight:700}
+ol.tl time{color:var(--mute);font-size:12px;margin-right:8px}
+.tg{font-size:11px;border:1px solid var(--line);border-radius:4px;padding:1px 6px;margin-left:6px;color:var(--mute)}
+.tg.r{border-color:var(--red);color:#ffb3bb}
+.ctrl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.scrub{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--mute);margin-top:6px}.scrub input{flex:1;padding:0}
+.form{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:end}
+.form label{font-size:12px;color:var(--mute);display:flex;flex-direction:column;gap:4px}
+.steps{list-style:none;margin:0;padding:0;font-size:13px}.steps li{padding:5px 0;display:flex;gap:8px}.steps li.d::before{content:"\2713";color:var(--gr);font-weight:700}.steps li:not(.d)::before{content:"\25CB";color:var(--mute)}
+.scard{border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:10px;background:#0a172c}
+.kv2{display:grid;grid-template-columns:130px 1fr;gap:4px 10px;font-size:13px}.kv2 span:nth-child(odd){color:var(--mute)}
+#toast{position:fixed;right:18px;top:18px;background:var(--red);color:#fff;padding:12px 16px;border-radius:8px;font-weight:700;transform:translateY(-120px);transition:transform .3s;z-index:9}#toast.show{transform:none}
+
+.node{cursor:pointer}
+.node.quar circle{stroke:#8a9ab5;stroke-dasharray:5 4;filter:none}
+.kc{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.kc span{border:1px solid var(--line);border-radius:6px;padding:4px 10px;font-size:12px;color:var(--mute)}
+.kc span.on{border-color:var(--red);color:#ffb3bb;background:#2a1019}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stat{border:1px solid var(--line);border-radius:10px;padding:10px;background:#0a172c}
+.stat b{display:block;font-size:20px}.stat span{font-size:12px;color:var(--mute)}
+.bar{height:8px;background:#13284a;border-radius:4px;overflow:hidden;min-width:80px}.bar i{display:block;height:100%;background:var(--amb)}
+@keyframes dash{to{stroke-dashoffset:-24}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div id="toast" role="alert"></div>
+<div class="app">
+<aside id="nav">
+  <div class="brand">DECOY<i>-X</i></div>
+  <button data-p="cc" class="on">&#8962; Command center</button>
+  <button data-p="lab">&#9879; Decoy lab</button>
+  <button data-p="intel">&#9672; Threat intelligence</button>
+  <button data-p="vault">&#9951; Evidence vault</button>
+  <button data-p="for">&#9636; Forensics</button>
+  <button data-p="sim">&#9654; Attack simulator</button>
+  <button data-p="set">&#9881; Settings</button>
+  <div class="tag">AI &middot; Cybersecurity &middot; Hash-chained evidence<br>Simulation only</div>
+</aside>
+<div class="main">
+ <div class="top">
+  <h1>DECOY-X: AI Cyber Deception &amp; Digital Crime Scene Reconstruction<small>"Let attackers reveal themselves."</small></h1>
+  <div class="right">
+   <span class="pill"><b>&#9679;</b> Simulation mode &middot; System online</span>
+   <span class="pill" id="clk"></span>
+   <button class="btn pri" id="runTop">&#9654; Run simulation</button>
+  </div>
+ </div>
+
+ <!-- COMMAND CENTER -->
+ <section class="page on" id="cc">
+  <div class="grid">
+   <div class="kp" data-w="kpi"></div>
+   <div class="card c8">
+    <h2>Live network map
+     <span class="maptools"><span class="seg"><button id="b3" class="on">3D</button><button id="b2">2D</button></span></span></h2>
+    <div class="mapbox">
+     <div class="stage d3" id="stage"><svg id="map" viewBox="0 0 740 380" role="img" aria-label="Simulated network map"></svg></div>
+     <div class="layers">
+      <b>Network layers</b>
+      <label><input type="checkbox" data-l="real" checked> Real assets</label>
+      <label><input type="checkbox" data-l="dec" checked> Decoys</label>
+      <label><input type="checkbox" data-l="path" checked> Attack path</label>
+      <label><input type="checkbox" data-l="edges" checked> Connections</label>
+      <span><i class="dot" style="background:var(--bl)"></i>Normal</span>
+      <span><i class="dot" style="background:var(--amb)"></i>Has decoys</span>
+      <span><i class="dot" style="background:var(--red)"></i>Attacker / hit</span>
+     </div>
+    </div>
+    <div class="mut" id="pathTxt" style="margin-top:8px">Run a scenario to watch the attacker move.</div>
+    <div data-w="killchain"></div>
+   </div>
+   <div class="card c4"><h2>AI threat analyst <span class="badge a">rule-based, explainable</span></h2><div data-w="analyst"></div></div>
+
+   <div class="card c12" id="manualCard" style="display:none"><h2>Attacker console (manual mode) <span class="badge a">you are the attacker</span></h2><div data-w="manual"></div></div>
+   <div class="card c5">
+    <h2>Attack journey reconstruction</h2>
+    <div class="ctrl">
+     <button class="btn" id="rp" disabled>&#8635; Replay crime scene</button>
+     <select id="spd" aria-label="Replay speed"><option value="1">1x</option><option value="2">2x</option></select>
+    </div>
+    <div data-w="journey"></div>
+    <div class="scrub"><span>Scrub</span><input id="sl" type="range" min="0" max="0" value="0" disabled aria-label="Replay scrubber"><span id="sln">0 / 0</span></div>
+   </div>
+   <div class="card c4"><h2>Evidence vault <span data-w="vbadge"></span></h2><div data-w="vaultmini"></div></div>
+   <div class="card c3"><h2>Forensic incident report</h2><div data-w="reportmini"></div></div>
+
+   <div class="card c4"><h2>Decoy lab</h2><div data-w="decoymini"></div></div>
+   <div class="card c4"><h2>Attack simulator</h2>
+    <div class="ctrl"><select data-sc aria-label="Scenario"></select><button class="btn pri" data-run>&#9654; Run</button></div>
+    <ul class="steps" data-w="simsteps"></ul></div>
+   <div class="card c4"><h2>Incident timeline <span class="badge g">live</span></h2><div data-w="timeline"></div></div>
+  </div>
+ </section>
+
+ <!-- DECOY LAB -->
+ <section class="page" id="lab">
+  <div class="card" style="margin-bottom:12px"><h2>Smart decoy generator</h2>
+   <div class="form">
+    <label>Decoy type<select id="dt"><option>File</option><option>Credential</option><option>Server</option><option>Database</option></select></label>
+    <label>Placed on<select id="dh"></select></label>
+    <label>Name<input id="dn" placeholder="e.g. Finance_Report_Q4.pdf"></label>
+    <button class="btn" id="gen">Generate realistic name</button>
+    <button class="btn pri" id="add">Create decoy</button>
+   </div>
+   <p class="mut">All decoys contain fake data only. Any interaction with them is treated as suspicious.</p></div>
+  <div class="card" style="margin-bottom:12px"><h2>Deception coverage</h2><div data-w="coverage"></div></div>
+  <div class="card"><h2>Active decoys</h2><div data-w="decoyfull"></div></div>
+ </section>
+
+ <!-- THREAT INTEL -->
+ <section class="page" id="intel">
+  <div class="grid">
+   <div class="card c7"><h2>Observed techniques (MITRE ATT&amp;CK mapping)</h2><div data-w="mitre"></div></div>
+   <div class="card c5"><h2>Simulated attacker profile</h2><div data-w="profile"></div></div>
+   <div class="card c12"><h2>Kill chain progress</h2><div data-w="killchain"></div></div>
+   <div class="card c12"><h2>Deception effectiveness</h2><div data-w="metrics"></div></div>
+   <div class="card c12"><h2>Full analysis</h2><div data-w="analyst"></div></div>
+  </div>
+ </section>
+
+ <!-- EVIDENCE VAULT -->
+ <section class="page" id="vault">
+  <div class="card"><h2>Tamper-evident evidence vault <span data-w="vbadge"></span></h2>
+   <div class="ctrl">
+    <button class="btn" id="ver">Verify chain</button>
+    <button class="btn" id="tam" disabled>Simulate tampering with record 3</button>
+    <button class="btn" id="res" disabled>Restore record</button>
+    <button class="btn" id="exj">Export evidence JSON</button>
+    <span id="vs" class="mut"></span>
+   </div>
+   <div class="ctrl"><input id="hq" placeholder="Paste a record hash (6+ characters)"><button class="btn" id="hqb">Check hash</button><span id="hqr" class="mut"></span></div>
+   <div data-w="vaultfull"></div>
+   <p class="mut">Each record stores the SHA-256 hash of its content plus the previous record's hash. Changing any record breaks every link after it. This is a hash chain, not a public blockchain.</p>
+  </div>
+ </section>
+
+ <!-- FORENSICS -->
+ <section class="page" id="for">
+  <div class="grid">
+   <div class="card c5"><h2>Incident report</h2><div data-w="reportmini"></div></div>
+   <div class="card c7"><h2>Incident timeline</h2><div data-w="timeline"></div></div>
+   <div class="card c12"><h2>Summary</h2><p class="mut" data-w="summary">Run a simulation to generate the incident summary.</p></div>
+  </div>
+ </section>
+
+ <!-- ATTACK SIMULATOR -->
+ <section class="page" id="sim">
+  <div class="card"><h2>Attack simulator <span class="badge a">predefined scenarios</span></h2>
+   <div class="ctrl"><select data-sc aria-label="Scenario"></select><button class="btn pri" data-run>&#9654; Run simulation</button></div>
+   <div data-w="simcards"></div>
+  </div>
+ </section>
+
+ <!-- SETTINGS -->
+ <section class="page" id="set">
+  <div class="card"><h2>Settings and prototype notes</h2>
+   <div class="ctrl"><label class="mut">Replay speed <select id="spd2"><option value="1">1x</option><option value="2">2x</option></select></label>
+   <label class="mut"><input type="checkbox" id="snd" checked> Alert sound</label></div>
+   <ul class="l">
+    <li>All networks, attackers and data are simulated. Nothing here scans or attacks a real system.</li>
+    <li>The AI analyst is a rule-based, explainable engine. It does not use an LLM or a trained model.</li>
+    <li>Evidence integrity uses a SHA-256 hash chain, not a public blockchain.</li>
+    <li>The "3D" map is a tilted 2D view.</li>
+    <li>Containment actions (quarantine) and the manual attacker console are simulated.</li>
+   </ul></div>
+ </section>
+</div>
+</div>
+
+<script>
+const N={
+ net:{x:70,y:190,s:"NET",label:"Internet"},web:{x:200,y:190,s:"WEB",label:"Web server"},
+ app:{x:340,y:90,s:"APP",label:"App server"},hr:{x:340,y:290,s:"HR",label:"HR workstation"},
+ adm:{x:490,y:90,s:"ADM",label:"Admin workstation"},fs:{x:490,y:290,s:"FS",label:"File server"},
+ db:{x:650,y:190,s:"DB",label:"Database"}};
+const E=[["net","web"],["web","app"],["web","hr"],["app","adm"],["hr","fs"],["fs","adm"],["adm","db"],["fs","db"]];
+let DEC=[{n:"svc_backup_admin",t:"Credential",h:"adm"},{n:"passwords_2026.xlsx",t:"File",h:"fs"},{n:"hr_salaries_backup.zip",t:"File",h:"fs"},{n:"db_backup_old.sql",t:"Database",h:"db"},{n:"AWS key AKIA...DECOY",t:"Credential",h:"db"},{n:"api_token_prod_DECOY",t:"Credential",h:"app"},{n:"customer_export.csv",t:"File",h:"app"},{n:"finance_report_q4.pdf",t:"File",h:"fs"}];
+const SC={
+ a:{name:"External breach (recommended)",ip:"185.199.12.47 (simulated)",start:"net",steps:[
+  {to:"web",act:"Exploited a public web app",m:"T1190",mn:"Exploit Public-Facing Application",tac:"Initial Access"},
+  {to:"hr",act:"Lateral move using a stolen session (off-hours)",m:"T1021",mn:"Remote Services",tac:"Lateral Movement",ind:["Lateral Movement","Off-hours activity"]},
+  {to:"fs",act:"Browsed network file shares",m:"T1083",mn:"File and Directory Discovery",tac:"Discovery"},
+  {to:"fs",act:"Opened passwords_2026.xlsx",m:"T1552",mn:"Unsecured Credentials",tac:"Credential Access",d:"passwords_2026.xlsx",sev:"High",pts:30,ind:["Decoy Triggered"]},
+  {to:"adm",act:"Logged in with fake account svc_backup_admin",m:"T1078",mn:"Valid Accounts",tac:"Defense Evasion / Persistence",d:"svc_backup_admin",sev:"Critical",pts:35,ind:["Credential Use"]},
+  {to:"db",act:"Downloaded db_backup_old.sql",m:"T1005",mn:"Data from Local System",tac:"Collection",d:"db_backup_old.sql",sev:"Critical",pts:35,ind:["Data Access Attempt"]}]},
+ b:{name:"Insider snooping",ip:"10.0.4.23 (internal, simulated)",start:"hr",steps:[
+  {to:"fs",act:"Searched shares for salary data",m:"T1083",mn:"File and Directory Discovery",tac:"Discovery"},
+  {to:"fs",act:"Opened hr_salaries_backup.zip",m:"T1005",mn:"Data from Local System",tac:"Collection",d:"hr_salaries_backup.zip",sev:"High",pts:40,ind:["Decoy Triggered"]},
+  {to:"db",act:"Used a fake AWS key against the database",m:"T1552",mn:"Unsecured Credentials",tac:"Credential Access",d:"AWS key AKIA...DECOY",sev:"Critical",pts:45,ind:["Credential Use"]}]}};
+SC.c={name:"Phishing to privilege escalation",ip:"203.0.113.58 (simulated phishing server)",start:"hr",steps:[
+  {to:"hr",act:"Phishing attachment executed on HR workstation",m:"T1566",mn:"Phishing",tac:"Initial Access"},
+  {to:"web",act:"Pivoted to the web server",m:"T1021",mn:"Remote Services",tac:"Lateral Movement",ind:["Lateral Movement"]},
+  {to:"app",act:"Enumerated application services",m:"T1046",mn:"Network Service Discovery",tac:"Discovery"},
+  {to:"app",act:"Opened customer_export.csv",m:"T1005",mn:"Data from Local System",tac:"Collection",d:"customer_export.csv",sev:"High",pts:30,ind:["Decoy Triggered"]},
+  {to:"app",act:"Used fake API token api_token_prod_DECOY",m:"T1528",mn:"Steal Application Access Token",tac:"Credential Access",d:"api_token_prod_DECOY",sev:"Critical",pts:35,ind:["Credential Use"]},
+  {to:"adm",act:"Tried to dump credentials on the admin workstation",m:"T1003",mn:"OS Credential Dumping",tac:"Credential Access",ind:["Privilege escalation"]},
+  {to:"adm",act:"Logged in with fake account svc_backup_admin",m:"T1078",mn:"Valid Accounts",tac:"Defense Evasion / Persistence",d:"svc_backup_admin",sev:"Critical",pts:35,ind:["Credential Use"]}]};
+SC.d={name:"Cloud key theft and data exfiltration",ip:"198.51.100.23 (simulated)",start:"net",steps:[
+  {to:"web",act:"Exploited a public web app",m:"T1190",mn:"Exploit Public-Facing Application",tac:"Initial Access"},
+  {to:"app",act:"Read secrets from an application config",m:"T1552",mn:"Unsecured Credentials",tac:"Credential Access"},
+  {to:"adm",act:"Moved to the admin workstation",m:"T1021",mn:"Remote Services",tac:"Lateral Movement",ind:["Lateral Movement"]},
+  {to:"db",act:"Used fake AWS key AKIA...DECOY on cloud storage",m:"T1078",mn:"Valid Accounts",tac:"Credential Access",d:"AWS key AKIA...DECOY",sev:"Critical",pts:40,ind:["Credential Use"]},
+  {to:"db",act:"Downloaded db_backup_old.sql",m:"T1530",mn:"Data from Cloud Storage",tac:"Collection",d:"db_backup_old.sql",sev:"Critical",pts:40,ind:["Data Access Attempt"]}]};
+SC.e={name:"Ransomware precursor",ip:"10.0.4.31 (internal, simulated)",start:"hr",steps:[
+  {to:"fs",act:"Mass enumeration of file shares",m:"T1083",mn:"File and Directory Discovery",tac:"Discovery"},
+  {to:"fs",act:"Touched finance_report_q4.pdf",m:"T1005",mn:"Data from Local System",tac:"Collection",d:"finance_report_q4.pdf",sev:"High",pts:25,ind:["Decoy Triggered","Mass file activity"]},
+  {to:"fs",act:"Touched hr_salaries_backup.zip in a rapid burst",m:"T1486",mn:"Data Encrypted for Impact (precursor)",tac:"Impact",d:"hr_salaries_backup.zip",sev:"High",pts:30,ind:["Mass file activity"]},
+  {to:"adm",act:"Tried to disable the backup agent",m:"T1490",mn:"Inhibit System Recovery",tac:"Impact",ind:["Backup tampering"]},
+  {to:"adm",act:"Logged in with fake account svc_backup_admin",m:"T1078",mn:"Valid Accounts",tac:"Defense Evasion / Persistence",d:"svc_backup_admin",sev:"Critical",pts:40,ind:["Credential Use"]}]};
+SC.manual={name:"Manual: you are the attacker",ip:"you (simulated)",start:"net",steps:[]};
+const $=id=>document.getElementById(id);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const now=()=>new Date().toLocaleTimeString("en-GB");
+const W=(n,h)=>document.querySelectorAll(`[data-w="${n}"]`).forEach(e=>e.innerHTML=h);
+let S={},busy=false,speed=1,mlock=false;
+
+/* hashing */
+function cyrb(s){let h1=0xdeadbeef,h2=0x41c6ce57;for(let i=0;i<s.length;i++){const c=s.charCodeAt(i);h1=Math.imul(h1^c,2654435761);h2=Math.imul(h2^c,1597334677)}h1=Math.imul(h1^(h1>>>16),2246822507)^Math.imul(h2^(h2>>>13),3266489909);h2=Math.imul(h2^(h2>>>16),2246822507)^Math.imul(h1^(h1>>>13),3266489909);return (h2>>>0).toString(16).padStart(8,"0")+(h1>>>0).toString(16).padStart(8,"0")}
+async function sha(s){if(window.crypto&&crypto.subtle){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}return cyrb(s).repeat(4)}
+
+/* map */
+function build(){
+  let h="";
+  E.forEach(([a,b])=>{h+=`<line class="edge" id="e-${a}-${b}" x1="${N[a].x}" y1="${N[a].y}" x2="${N[b].x}" y2="${N[b].y}"/>`});
+  for(const k in N){const n=N[k],c=DEC.filter(d=>d.h===k).length;
+    h+=`<g class="node ${c?"has":""}" id="n-${k}" transform="translate(${n.x},${n.y})"><circle r="27"/><text y="4">${n.s}</text><text class="lbl" y="48">${n.label}</text>`+
+    (c?`<g class="dec" transform="translate(22,-24)"><rect x="-9" y="-9" width="18" height="18" transform="rotate(45)"/><text y="4" style="text-anchor:middle;font-weight:700">${c}</text></g>`:"")+`</g>`}
+  h+=`<g id="atk" style="transform:translate(${N.net.x}px,${N.net.y}px);opacity:0"><circle r="10" class="atk"/></g>`;
+  $("map").innerHTML=h;
+}
+const edge=(a,b)=>$(`e-${a}-${b}`)||$(`e-${b}-${a}`);
+
+/* derived state: powers live view and replay */
+function stateAt(i){
+  const sc=SC[S.sc];let path=[sc.start],risk=0,alerts=[],hit=new Set(),inds=new Set(),techs=[];
+  for(let k=0;k<=i;k++){const st=sc.steps[k];
+    if(st.to!==path[path.length-1])path.push(st.to);
+    if(st.d){risk=Math.min(100,risk+st.pts);alerts.push(Object.assign({node:st.to,t:S.times[k]},st));hit.add(st.to)}
+    (st.ind||[]).forEach(x=>inds.add(x));techs.push(Object.assign({t:S.times[k]},st))}
+  return{path,risk,alerts,hit,inds,techs,pos:path[path.length-1]};
+}
+const lvl=r=>r>=80?["Critical","cr"]:r>=50?["High","hi"]:r>0?["Medium","g"]:["None","g"];
+
+/* analyst */
+function analystHTML(st){
+  const sc=SC[S.sc],R=54,C=2*Math.PI*R,[lab,cls]=lvl(st.risk);
+  const ring=`<svg class="ring ${cls}" viewBox="0 0 140 140"><circle class="rt" cx="70" cy="70" r="54"/><circle class="rv" cx="70" cy="70" r="54" style="stroke-dasharray:${C*st.risk/100} ${C}" transform="rotate(-90 70 70)"/><text x="70" y="74" font-size="34" font-weight="800">${st.risk}</text><text x="70" y="94" font-size="12" fill="#7f98ba">/100 ${lab.toUpperCase()}</text></svg>`;
+  if(!st.alerts.length)return `<div class="an">${ring}<div><span class="badge g">No threat detected</span><p class="mut">Waiting for a decoy interaction. Real users never touch decoys, so any touch is a strong signal.</p></div></div>`;
+  const ext=sc.start==="net",cred=st.inds.has("Credential Use"),data=st.inds.has("Data Access Attempt"),ran=st.inds.has("Mass file activity");
+  const cls2=ran?"Ransomware Precursor":ext?(st.inds.has("Lateral Movement")?"Lateral Movement":"External Recon"):"Insider Recon";
+  const conf=Math.min(97,55+st.alerts.length*12+(cred?8:0));
+  const kind=ran?"ransomware-style precursor behaviour":ext?(cred?"targeted external intrusion with credential harvesting":"external reconnaissance"):"insider reconnaissance of sensitive records";
+  const txt=`This looks like ${/^[aeiou]/.test(kind)?"an":"a"} ${kind}. The actor touched ${st.alerts.length} decoy asset(s) over ${st.path.length-1} hop(s)`+(cred?", used a fake credential":"")+(data?" and tried to reach stored data, which matches a data-theft pattern.":".");
+  const rec=["Isolate "+st.path.slice(1).map(k=>N[k].label).filter((v,i,a)=>a.indexOf(v)===i).join(", ")];
+  if(cred)rec.push("Reset credentials stored near the touched decoys");
+  if(ran)rec.push("Protect backups and block mass file changes on shares");
+  rec.push("Increase monitoring on "+N[st.pos].label);
+  const q=[...st.hit].map(k=>S.quar.has(k)?`<span class="badge g">${N[k].label} isolated</span>`:`<button class="btn" data-q="${k}">Quarantine ${N[k].label}</button>`).join(" ");
+  return `<div class="an">${ring}<div><div class="mut">Threat classification</div><span class="badge">${cls2}</span> <span class="tg">confidence ${conf}%</span>
+   <ul class="l">${st.alerts.slice(-3).map(a=>`<li>${a.act}</li>`).join("")}</ul></div></div>
+   <div class="ind">${[...st.inds].map(i=>`<span>${i}</span>`).join("")}</div>
+   <p class="mut" style="margin:0 0 6px">${txt}</p>
+   <p class="mut" style="margin:0 0 4px">Why this score: ${st.alerts.map(a=>a.d+" +"+a.pts).join(", ")}</p>
+   <strong style="font-size:13px">Recommended actions</strong><ul class="l">${rec.map(r=>`<li>${r}</li>`).join("")}</ul>
+   <div class="ctrl" style="margin-top:8px">${q}</div>`;
+}
+
+/* evidence */
+async function block(ev){const i=S.chain.length,prev=i?S.chain[i-1].hash:"0".repeat(64),t=now();
+  S.chain.push({i,t,ev,prev,hash:await sha(i+"|"+t+"|"+ev+"|"+prev),orig:ev})}
+async function verify(){
+  if(!S.chain.length)return;let prevRe="0".repeat(64);S.status=[];
+  for(const b of S.chain){const re=await sha(b.i+"|"+b.t+"|"+b.ev+"|"+b.prev);
+    S.status.push(re!==b.hash?"Tampered":(b.prev!==prevRe?"Broken link":"Valid"));prevRe=re}
+  const bad=S.status.filter(s=>s!=="Valid").length;
+  $("vs").innerHTML=bad?`<span class="bad">Integrity check failed: ${bad} record(s) affected</span>`:'<span class="ok">All records verified. Nothing has been altered.</span>';
+  update();
+}
+const vstat=k=>(S.status||[])[k]||"Recorded";
+const vcls=s=>s==="Valid"?"ok":s==="Recorded"?"":"bad";
+
+/* master render */
+function update(){
+  const sc=SC[S.sc],i=S.cur,st=stateAt(i),[lab]=lvl(st.risk);
+  // map
+  document.querySelectorAll(".edge").forEach(e=>e.classList.remove("trail"));
+  document.querySelectorAll(".node").forEach(n=>n.classList.remove("hit","quar"));
+  for(let k=1;k<st.path.length;k++){const e=edge(st.path[k-1],st.path[k]);if(e)e.classList.add("trail")}
+  st.hit.forEach(k=>$("n-"+k).classList.add("hit"));S.quar.forEach(k=>$("n-"+k).classList.add("quar"));
+  const a=$("atk");a.style.opacity=S.started?1:0;a.style.transform=`translate(${N[st.pos].x}px,${N[st.pos].y}px)`;
+  $("pathTxt").innerHTML=S.started?"Reconstructed attacker path: "+st.path.map(k=>N[k].label).join(" &rarr; "):"Run a scenario to watch the attacker move.";
+  // kpi
+  const trig=new Set(st.alerts.map(x=>x.d)).size,okc=(S.status||[]).length&&(S.status||[]).every(s=>s==="Valid");
+  const kp=(ic,l,v,s,c)=>`<div class="kpi ${c}"><div class="ico">${ic}</div><div><div class="kl">${l}</div><div class="kv">${v}</div><div class="ks">${s}</div></div></div>`;
+  W("kpi",kp("&#9635;","Total decoys",DEC.length,"monitored in sandbox","")+kp("&#9873;","Triggered decoys",trig,trig?"live alerts":"no alerts","a")+kp("&#9673;","Active attackers",(S.started&&!S.done)||(S.done&&trig)?1:0,S.started?"in simulation":"none","r")+kp("&#9650;","Risk score",st.risk+"/100",lab,"r")+kp("&#9939;","Evidence blocks",S.chain.length,okc?"verified":"hash-chained","g"));
+  // analyst
+  W("analyst",analystHTML(st));W("killchain",kcHTML(st));W("metrics",metricsHTML(st));W("coverage",coverageHTML());W("manual",manualHTML(st));$("manualCard").style.display=S.manual&&!S.done?"block":"none";
+  // journey + timeline
+  let jl="",tl="";
+  for(let k=0;k<=i;k++){const s=sc.steps[k],tag=s.d?'<span class="tg r">Decoy Triggered</span>':(s.ind&&s.ind[0]?`<span class="tg">${s.ind[0]}</span>`:"");
+    jl+=`<li class="${s.d?"al":""} ${k===i?"cur":""}"><time>${S.times[k]}</time>${s.act}${tag}</li>`;
+    tl+=`<li class="${s.d?"al":""} ${k===i?"cur":""}"><time>${S.times[k]}</time>${s.act}<span class="tg">${s.m}</span></li>`}
+  W("journey",jl?`<ol class="tl">${jl}</ol>`:'<p class="empty">Press Run simulation to start.</p>');
+  W("timeline",tl?`<ol class="tl">${tl}</ol>`:'<p class="empty">Events appear here as the attacker moves.</p>');
+  $("sl").max=sc.steps.length;$("sl").value=i+1;$("sln").textContent=(i+1)+" / "+sc.steps.length;
+  // vault
+  const badge=S.status&&S.status.length?(S.status.every(s=>s==="Valid")?'<span class="badge g">Hash chain verified</span>':'<span class="badge">Tampering detected</span>'):'<span class="badge a">Not verified yet</span>';
+  W("vbadge",badge);
+  const row=(b,k)=>`<tr><td>${b.i}</td><td>${b.t}</td><td>${b.ev}</td><td><code>${b.hash.slice(0,12)}...</code></td><td class="${vcls(vstat(k))}">${vstat(k)}</td></tr>`;
+  const head="<thead><tr><th>#</th><th>Time</th><th>Event</th><th>Hash</th><th>Status</th></tr></thead>";
+  const chain=n=>`<div class="chain">${S.chain.slice(-n).map(b=>`<b class="${vstat(b.i)==="Valid"||vstat(b.i)==="Recorded"?"":"x"}">H${b.i}</b>`).join(" &rarr; ")}</div>`;
+  const mrow=b=>`<tr><td>${b.i}</td><td>${b.ev}</td><td><code>${b.hash.slice(0,8)}..</code></td><td class="${vcls(vstat(b.i))}">${vstat(b.i)}</td></tr>`;
+  W("vaultmini",S.chain.length?`<table><thead><tr><th>#</th><th>Event</th><th>Hash</th><th>Status</th></tr></thead><tbody>${S.chain.slice(-5).map(mrow).join("")}</tbody></table>${chain(5)}`:'<p class="empty">Evidence is recorded when a simulation runs.</p>');
+  W("vaultfull",S.chain.length?`<table>${head}<tbody>${S.chain.map((b,k)=>row(b,k)).join("")}</tbody></table>${chain(99)}`:'<p class="empty">Run a simulation to record evidence.</p>');
+  // report
+  const head2=S.chain.length?S.chain[S.chain.length-1].hash.slice(0,12)+"...":"-";
+  W("reportmini",`<div class="kv2"><span>Incident ID</span><span>${S.id||"-"}</span><span>Severity</span><span>${st.alerts.length?`<span class="badge">${lab}</span>`:"-"}</span><span>Detected at</span><span>${st.alerts[0]?st.alerts[0].t:"-"}</span><span>Total events</span><span>${i+1>0?i+1:0}</span><span>Affected assets</span><span>${[...st.hit].map(k=>N[k].label).join(", ")||"-"}</span><span>Evidence hash</span><span><code>${head2}</code></span></div>
+   <div class="ctrl" style="margin-top:10px"><button class="btn pri" data-rep ${S.done?"":"disabled"}>Download report</button></div>`);
+  W("summary",S.summary||"Run a simulation to generate the incident summary.");
+  // decoys
+  const drows=DEC.map(d=>`<tr><td>${d.n}</td><td>${d.t}</td><td>${N[d.h].label}</td><td class="${S.hitNames&&S.hitNames.has(d.n)?"bad":"ok"}">${S.hitNames&&S.hitNames.has(d.n)?"Triggered":"Active"}</td></tr>`).join("");
+  W("decoymini",`<table><thead><tr><th>Name</th><th>Type</th><th>Status</th></tr></thead><tbody>${DEC.slice(0,5).map(d=>`<tr><td>${d.n}</td><td>${d.t}</td><td class="${st.alerts.some(a=>a.d===d.n)?"bad":"ok"}">${st.alerts.some(a=>a.d===d.n)?"Triggered":"Active"}</td></tr>`).join("")}</tbody></table>`);
+  W("decoyfull",`<table><thead><tr><th>Name</th><th>Type</th><th>Placed on</th><th>Status</th></tr></thead><tbody>${DEC.map(d=>`<tr><td>${d.n}</td><td>${d.t}</td><td>${N[d.h].label}</td><td class="${st.alerts.some(a=>a.d===d.n)?"bad":"ok"}">${st.alerts.some(a=>a.d===d.n)?"Triggered":"Active"}</td></tr>`).join("")}</tbody></table>`);
+  // simulator
+  W("simsteps",sc.steps.map((s,k)=>`<li class="${k<=i?"d":""}">${s.act}</li>`).join(""));
+  W("simcards",Object.keys(SC).map(k=>k==="manual"?`<div class="scard"><strong>${SC[k].name}</strong> <span class="tg">interactive</span><p class="mut" style="margin:4px 0">Choose this scenario and press Run. Then click machines on the map or use the attacker console. Touch a decoy and you get caught.</p></div>`:`<div class="scard"><strong>${SC[k].name}</strong> <span class="tg">${SC[k].steps.length} steps</span><p class="mut" style="margin:4px 0">Entry: ${SC[k].ip}</p><ul class="l">${SC[k].steps.map(x=>`<li>${x.act}${x.d?" (decoy)":""}</li>`).join("")}</ul></div>`).join(""));
+  // intel
+  W("mitre",st.techs.length?`<table><thead><tr><th>Time</th><th>ID</th><th>Technique</th><th>Tactic</th></tr></thead><tbody>${st.techs.map(t=>`<tr><td>${t.t}</td><td><code>${t.m}</code></td><td>${t.mn}</td><td>${t.tac}</td></tr>`).join("")}</tbody></table>`:'<p class="empty">Techniques appear as the simulated attacker acts.</p>');
+  W("profile",`<div class="kv2"><span>Scenario</span><span>${sc.name}</span><span>Source</span><span>${sc.ip}</span><span>Entry point</span><span>${N[sc.start].label}</span><span>Hops</span><span>${st.path.length-1}</span><span>Decoys touched</span><span>${trig}</span><span>Dwell time</span><span>${S.started&&S.t0?Math.max(0,Math.round(((S.t1||Date.now())-S.t0)/1000))+" s":"-"}</span><span>Behaviour</span><span>${behav(st)}</span><span>Sophistication</span><span>${soph(st)}</span></div>`);
+  // header status
+  $("sl").max=sc.steps.length;
+}
+
+/* run / replay */
+function fillSc(){document.querySelectorAll("select[data-sc]").forEach(s=>{s.innerHTML=Object.keys(SC).map(k=>`<option value="${k}" ${k===S.sc?"selected":""}>${SC[k].name}</option>`).join("")})}
+function reset(keepSc){
+  const sc=keepSc||S.sc||"a";
+  SC.manual.steps=[];S={sc,times:[],ts:[],chain:[],status:[],cur:-1,done:false,started:false,manual:false,quar:new Set(),id:null,summary:""};
+  build();fillSc();$("vs").textContent="";["rp","tam","res"].forEach(x=>$(x).disabled=true);
+  $("sl").disabled=true;update();
+}
+function go(p){document.querySelectorAll("#nav button").forEach(x=>x.classList.toggle("on",x.dataset.p===p));
+  document.querySelectorAll(".page").forEach(x=>x.classList.toggle("on",x.id===p))}
+async function run(){
+  if(busy)return;if(S.sc==="manual"){await startManual();return}reset(S.sc);go("cc");busy=true;setBusy(true);
+  const sc=SC[S.sc];S.started=true;S.t0=Date.now();S.id="DCX-"+new Date().getFullYear()+"-"+String(Math.floor(Math.random()*9000)+1000);
+  await block("Monitoring started ("+sc.name+")");update();
+  for(let i=0;i<sc.steps.length;i++){
+    await sleep(1500/speed);S.times[i]=now();S.ts[i]=Date.now();const st=sc.steps[i];S.cur=i;
+    await block(st.act+(st.d?" [DECOY ALERT]":""));update();
+    if(st.d)toast(st.sev+" alert: "+st.d);
+  }
+  await sleep(500/speed);S.done=true;S.t1=Date.now();
+  await block("Incident closed, report generated");
+  summary();await verify();
+  busy=false;setBusy(false);$("sl").disabled=false;["rp","tam"].forEach(x=>$(x).disabled=false);update();
+}
+function setBusy(b){$("runTop").disabled=b;document.querySelectorAll("[data-run]").forEach(x=>x.disabled=b);document.querySelectorAll("select[data-sc]").forEach(x=>x.disabled=b)}
+async function replay(){
+  if(busy||!S.done)return;busy=true;setBusy(true);$("rp").disabled=true;const n=SC[S.sc].steps.length;
+  for(let i=0;i<n;i++){S.cur=i;update();await sleep(1300/speed)}
+  busy=false;setBusy(false);$("rp").disabled=false;
+}
+function summary(){
+  const sc=SC[S.sc],st=stateAt(sc.steps.length-1);
+  if(!st.alerts.length){S.summary=`The simulated attacker moved through ${st.path.length-1} hop(s) (${st.path.map(k=>N[k].label).join(" > ")}) without touching any decoy, so it was not detected. Add decoys along this path (see Decoy lab, Deception coverage).`;return}
+  S.summary=`Entry point: ${N[st.path[0]].label}. The intruder crossed ${st.path.length-1} hop(s) (${st.path.map(k=>N[k].label).join(" > ")}) and triggered ${st.alerts.length} decoy(s). First alert: "${st.alerts[0].d}" on ${N[st.alerts[0].node].label}. Final risk score ${st.risk}/100. Evidence head hash: ${S.chain[S.chain.length-1].hash.slice(0,16)}...`;
+}
+function report(){
+  const sc=SC[S.sc],st=stateAt(sc.steps.length-1),L=["# DECOY-X Incident Report","","Incident ID: "+S.id,"Generated: "+new Date().toLocaleString(),"Scenario: "+sc.name+" (simulated)","","## Summary",S.summary,"","## Decoy alerts"];
+  st.alerts.forEach(a=>L.push(`- [${a.sev}] ${a.t} | ${a.d} on ${N[a.node].label} | ${a.m} ${a.mn}`));
+  L.push("","## Reconstructed path",st.path.map(k=>N[k].label).join(" -> "),"","## Timeline");
+  sc.steps.forEach((s,k)=>L.push(`- ${S.times[k]} | ${s.act} | ${s.m} ${s.mn}${s.d?" | DECOY":""}`));
+  L.push("","## Evidence chain (SHA-256)");S.chain.forEach((b,k)=>L.push(`- #${b.i} ${b.t} | ${b.ev} | ${b.hash} | ${vstat(k)}`));
+  L.push("","Note: simulated data; rule-based analysis; hash chain (not a public blockchain).");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([L.join("\n")],{type:"text/markdown"}));a.download="decoyx-incident-report.md";a.click();
+}
+function toast(m){const t=$("toast");t.textContent=m;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2600);
+  if(!$("snd").checked)return;
+  try{const c=new (window.AudioContext||window.webkitAudioContext)(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.frequency.value=720;g.gain.value=.05;o.start();o.stop(c.currentTime+.18)}catch(e){}}
+
+/* kill chain, metrics, coverage */
+const KC=[["Initial Access",/Initial/],["Discovery",/Discovery/],["Credential Access",/Credential/],["Lateral Movement",/Lateral/],["Collection",/Collection|Exfil/],["Impact",/Impact/]];
+function kcHTML(st){const t=st.techs.map(x=>x.tac).join("|");
+  return `<div class="kc">${KC.map(([n,re])=>`<span class="${re.test(t)?"on":""}">${n}</span>`).join("")}</div>`}
+function behav(st){const ext=SC[S.sc].start==="net";
+  if(st.inds.has("Mass file activity"))return "Ransomware-style precursor";
+  if(st.inds.has("Credential Use"))return ext?"Credential harvesting (external)":"Credential misuse";
+  return st.alerts.length?(ext?"Reconnaissance":"Insider browsing"):"Not yet classified"}
+function soph(st){const n=new Set(st.techs.map(t=>t.m)).size;return n>=6?"High":n>=4?"Medium":n?"Low":"-"}
+function metricsHTML(st){
+  const sc=SC[S.sc],internal=Object.keys(N).filter(k=>k!=="net"),cov=internal.filter(k=>DEC.some(d=>d.h===k)).length;
+  let first=-1;for(let k=0;k<=S.cur;k++){if(sc.steps[k]&&sc.steps[k].d){first=k;break}}
+  const mttd=first>=0&&S.ts[first]&&S.t0?((S.ts[first]-S.t0)/1000).toFixed(1)+" s":"-";
+  const trig=new Set(st.alerts.map(x=>x.d)).size;
+  const verdict=first>=0?"Detected":(S.started?"Not detected yet":"Idle");
+  const stat=(v,l)=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`;
+  return `<div class="stats">${stat(verdict,"Detection verdict")}${stat(mttd,"Time to first alert")}${stat(first>=0?first:"-","Events before first alert")}${stat(trig+" / "+DEC.length,"Decoys triggered")}${stat(Math.round(cov/internal.length*100)+"%","Deception coverage")}${stat(S.quar.size,"Machines isolated")}</div>`;
+}
+function coverageHTML(){
+  const internal=Object.keys(N).filter(k=>k!=="net"),cov=internal.filter(k=>DEC.some(d=>d.h===k)),gaps=internal.filter(k=>!DEC.some(d=>d.h===k));
+  const rows=internal.map(k=>{const c=DEC.filter(d=>d.h===k).length;return `<tr><td>${N[k].label}</td><td><div class="bar"><i style="width:${Math.min(100,c*40)}%"></i></div></td><td>${c}</td><td class="${c?"ok":"bad"}">${c?"Covered":"Gap"}</td></tr>`}).join("");
+  return `<p class="mut" style="margin:0 0 8px">Coverage: <b style="color:var(--text)">${Math.round(cov.length/internal.length*100)}%</b> of internal machines hold at least one decoy.${gaps.length?" Suggested next decoys: "+gaps.map(k=>N[k].label).join(", ")+".":" Every internal machine is covered."}</p><table><thead><tr><th>Machine</th><th>Decoys</th><th>Count</th><th>Status</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+/* manual attacker mode */
+function manualHTML(st){
+  if(!S.manual||S.done)return "";
+  const pos=st.pos,adj=E.filter(e=>e.includes(pos)).map(e=>e[0]===pos?e[1]:e[0]),here=DEC.filter(d=>d.h===pos);
+  return `<p class="mut" style="margin:0 0 8px">You are at <b style="color:var(--text)">${N[pos].label}</b>. Real users never touch decoys. Can you get through without being caught? You can also click machines on the map.</p>
+  <div class="ctrl"><span class="mut">Move to:</span>${adj.map(k=>`<button class="btn" data-mv="${k}">${N[k].label}</button>`).join("")}</div>
+  <div class="ctrl"><span class="mut">Actions here:</span><button class="btn" data-act="browse">Browse and enumerate</button>${here.map(d=>`<button class="btn" data-dec="${d.n}" ${st.alerts.some(a=>a.d===d.n)?"disabled":""}>Open ${d.n}</button>`).join("")}</div>
+  <div class="ctrl"><button class="btn pri" data-fin>Finish and generate report</button></div>`;
+}
+async function mpush(st){
+  if(mlock||!S.manual||S.done)return;mlock=true;
+  const sc=SC.manual;sc.steps.push(st);const k=sc.steps.length-1;S.times[k]=now();S.ts[k]=Date.now();S.cur=k;
+  await block(st.act+(st.d?" [DECOY ALERT]":""));update();
+  if(st.d)toast(st.sev+" alert: "+st.d);
+  mlock=false;
+}
+function manualMove(k){
+  if(!S.manual||S.done||mlock)return;const pos=stateAt(S.cur).pos;if(pos===k)return;
+  if(!E.some(e=>(e[0]===pos&&e[1]===k)||(e[1]===pos&&e[0]===k))){toast("No direct link from "+N[pos].label+" to "+N[k].label);return}
+  mpush({to:k,act:"Moved to "+N[k].label,m:"T1021",mn:"Remote Services",tac:"Lateral Movement",ind:["Lateral Movement"]});
+}
+function manualBrowse(){const pos=stateAt(S.cur).pos;mpush({to:pos,act:"Browsed and enumerated "+N[pos].label,m:"T1083",mn:"File and Directory Discovery",tac:"Discovery"})}
+const DT={File:{sev:"High",pts:30,tac:"Collection",m:"T1005",mn:"Data from Local System",v:"Opened"},Credential:{sev:"Critical",pts:35,tac:"Credential Access",m:"T1552",mn:"Unsecured Credentials",v:"Used"},Database:{sev:"Critical",pts:35,tac:"Collection",m:"T1005",mn:"Data from Local System",v:"Queried"},Server:{sev:"High",pts:30,tac:"Discovery",m:"T1046",mn:"Network Service Discovery",v:"Connected to"}};
+function manualDecoy(name){const d=DEC.find(x=>x.n===name);if(!d)return;const t=DT[d.t];
+  mpush({to:d.h,act:t.v+" "+d.n,m:t.m,mn:t.mn,tac:t.tac,d:d.n,sev:t.sev,pts:t.pts,ind:[d.t==="Credential"?"Credential Use":"Decoy Triggered"]})}
+async function startManual(){
+  reset("manual");go("cc");S.manual=true;S.started=true;S.t0=Date.now();S.id="DCX-"+new Date().getFullYear()+"-"+String(Math.floor(Math.random()*9000)+1000);
+  await block("Manual session started: you are the attacker");update();
+  toast("Manual mode: click machines or use the console");
+}
+async function finishManual(){
+  if(!S.manual||S.done||mlock)return;mlock=true;S.done=true;S.t1=Date.now();
+  await block("Incident closed, report generated");summary();await verify();
+  $("sl").disabled=false;["rp","tam"].forEach(x=>$(x).disabled=false);mlock=false;update();
+}
+async function quarantine(k){
+  if(S.quar.has(k))return;if((busy&&!S.manual)||mlock){toast("Wait for the current step to finish");return}
+  mlock=true;S.quar.add(k);await block("Response: "+N[k].label+" isolated from the network (simulated)");mlock=false;await verify();
+}
+function dl(name,text,type){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click()}
+function exportJSON(){
+  if(!S.chain.length){toast("No evidence recorded yet");return}
+  dl("decoyx-evidence.json",JSON.stringify({incident:S.id,scenario:SC[S.sc].name,simulated:true,summary:S.summary,chain:S.chain.map((b,k)=>({index:b.i,time:b.t,event:b.ev,prev_hash:b.prev,hash:b.hash,status:vstat(k)}))},null,2),"application/json");
+}
+function lookup(){
+  const q=$("hq").value.trim().toLowerCase();if(q.length<6){$("hqr").textContent="Enter at least 6 characters.";return}
+  const k=S.chain.findIndex(b=>b.hash.startsWith(q));
+  $("hqr").innerHTML=k<0?'<span class="bad">No record with that hash.</span>':`<span class="${vcls(vstat(k))}">Record #${k}: ${vstat(k)}</span>`;
+}
+
+/* decoy lab */
+const GEN={File:["Finance_Report_Q4.pdf","Payroll_Oct_2026.xlsx","Board_Minutes_Confidential.docx","Vendor_Contracts.zip"],Credential:["m.rao@company.fake","ceo.office@company.fake","vpn_admin (fake)","Stripe key sk_live_DECOY"],Server:["finance-portal.internal.fake","backup-vault-02.fake"],Database:["customers_prod_copy.db","audit_archive.sql"]};
+
+function init(){
+  $("dh").innerHTML=Object.keys(N).filter(k=>k!=="net").map(k=>`<option value="${k}">${N[k].label}</option>`).join("");
+  $("gen").onclick=()=>{const a=GEN[$("dt").value];$("dn").value=a[Math.floor(Math.random()*a.length)]};
+  $("add").onclick=()=>{const n=$("dn").value.trim();if(!n){$("dn").focus();return}
+    DEC.push({n,t:$("dt").value,h:$("dh").value});$("dn").value="";build();update();toast("Decoy created: "+n)};
+  document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>go(b.dataset.p));
+  $("runTop").onclick=run;
+  document.addEventListener("click",e=>{
+    if(e.target.closest("[data-run]"))run();
+    if(e.target.closest("[data-rep]"))report();
+    const mv=e.target.closest("[data-mv]");if(mv)manualMove(mv.dataset.mv);
+    if(e.target.closest("[data-act]"))manualBrowse();
+    const dc=e.target.closest("[data-dec]");if(dc&&!dc.disabled)manualDecoy(dc.dataset.dec);
+    if(e.target.closest("[data-fin]"))finishManual();
+    const q=e.target.closest("[data-q]");if(q)quarantine(q.dataset.q)});
+  $("map").addEventListener("click",e=>{const g=e.target.closest(".node");if(g&&S.manual)manualMove(g.id.slice(2))});
+  $("exj").onclick=exportJSON;$("hqb").onclick=lookup;
+  document.addEventListener("change",e=>{
+    if(e.target.matches("select[data-sc]")&&!busy){reset(e.target.value)}
+    if(e.target.matches("[data-l]")){document.getElementById("map").classList.toggle("hide-"+e.target.dataset.l,!e.target.checked)}});
+  $("rp").onclick=replay;
+  $("spd").onchange=e=>{speed=+e.target.value;$("spd2").value=e.target.value};
+  $("spd2").onchange=e=>{speed=+e.target.value;$("spd").value=e.target.value};
+  $("sl").oninput=e=>{if(!busy&&S.done){const v=+e.target.value;if(v>0){S.cur=v-1;update()}}};
+  $("b3").onclick=()=>{$("stage").classList.add("d3");$("b3").classList.add("on");$("b2").classList.remove("on")};
+  $("b2").onclick=()=>{$("stage").classList.remove("d3");$("b2").classList.add("on");$("b3").classList.remove("on")};
+  $("ver").onclick=verify;
+  $("tam").onclick=async()=>{const b=S.chain[3];if(!b)return;b.ev="Decoy alert entry deleted by attacker";$("res").disabled=false;$("tam").disabled=true;await verify()};
+  $("res").onclick=async()=>{const b=S.chain[3];if(b)b.ev=b.orig;$("res").disabled=true;$("tam").disabled=false;await verify()};
+  setInterval(()=>{$("clk").textContent=new Date().toLocaleString("en-GB")},1000);$("clk").textContent=new Date().toLocaleString("en-GB");
+  reset("a");
+}
+init();
+</script>
+</body>
+</html>
